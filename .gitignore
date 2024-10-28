@@ -1,0 +1,9 @@
+# data files
+# 차후 해당 데이터 공개 시 저작권 등의 문제 발생 가능성 있음.
+data_files/*
+
+# environment variables
+.env
+
+# python virtual environment
+.venv

@@ -1,0 +1,28 @@
+import torch
+
+def customloss(predict, y):#학습용
+    # predict를 y와 같은 차원으로 변환
+    predict = predict.squeeze()  # (batch_size, 1) -> (batch_size,)
+    
+    e1 = torch.zeros_like(y)
+    e2 = torch.zeros_like(y)
+    accuracy = torch.zeros_like(y)
+
+    positive_mask = y > 0
+    negative_mask = y <= 0
+
+    e1[positive_mask] = torch.abs(y[positive_mask] - predict[positive_mask]) / (y[positive_mask]+0.00000001)
+    e2[negative_mask] = torch.abs(y[negative_mask] - predict[negative_mask]) / torch.abs(y[negative_mask]+0.00000001)
+
+    accuracy[positive_mask] = (predict[positive_mask] > 0).float()
+    accuracy[negative_mask] = (predict[negative_mask] <= 0).float()
+
+    e1_mean = e1[e1 != 0].mean() if (e1 != 0).any() else torch.tensor(0.0)
+    e2_mean = e2[e2 != 0].mean() if (e2 != 0).any() else torch.tensor(0.0)
+
+    accuracy_mean = accuracy.mean()
+
+    e_F = 0.2 * e1_mean + 0.8 * e2_mean - (accuracy_mean - 0.95)
+    e_F_square = e_F**2
+
+    return e_F_square

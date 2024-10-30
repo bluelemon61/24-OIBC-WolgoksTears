@@ -6,7 +6,7 @@ class post_apis:
     self.API_KEY = API_KEY
     self.API_URL = API_URL
 
-  def actual_weather(self, result_data):
+  def submissions(self, result_data):
     """
     결과 데이터를 제출하는 api
 

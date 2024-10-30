@@ -289,8 +289,6 @@ def weather_data_merger():
       for location in location1:
         with open(f'./data_files/{weather_name}_1_{location}.csv', 'r', encoding='UTF8') as f_from:
           data = f_from.readlines()
-
-          print(data)
           
           if len(content) == 0:
             content += data[0]

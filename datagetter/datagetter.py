@@ -217,12 +217,20 @@ def make_json_to_csv(start_date, end_date):
             target_csv.write(content)
     target += timedelta(days=1)
 
+def data_getter(start, end):
+  initialize()
+  get_data_by_start_end_date(start, end)
+  split_weather_data_by_location()
+  make_copy_data_without_weather()
+  make_json_to_csv(start, end)
+  print("완료되었습니다.")
+
 if __name__ == "__main__":
   start = '2024-10-23'
   end = '2024-10-29'
 
   initialize()
-  # get_data_by_start_end_date(start, end)
+  get_data_by_start_end_date(start, end)
   split_weather_data_by_location()
   make_copy_data_without_weather()
   make_json_to_csv(start, end)

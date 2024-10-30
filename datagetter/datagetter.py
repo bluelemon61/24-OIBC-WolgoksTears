@@ -3,7 +3,12 @@ from dotenv import load_dotenv
 import json
 from datetime import datetime, timedelta
 
-from get_apis import get_apis
+if __name__ == "__main__":
+    # For running as main script
+    from api.get_apis import get_apis
+else:
+    # For using as a package
+    from .api.get_apis import get_apis
 
 load_dotenv()
 
@@ -26,6 +31,49 @@ def initialize():
   for folder_name in category_folder_paths:
     if not os.path.exists(f'{json_folder_path}/{folder_name}'):
       os.makedirs(f'{json_folder_path}/{folder_name}')
+
+def get_smp_rt_rc_right_data():
+  """
+  폐기
+  
+  1시간단위 데이터를 15분단위로 수정하려고 했는데
+
+  2024-03-01 ~ 2024-10-21 는 api로 못불러옴
+  """
+  target = datetime.strptime('2024-03-01', '%Y-%m-%d')
+  end = datetime.strptime('2024-10-21', '%Y-%m-%d')
+  
+  title_row = 'ts,실시간 임시 가격(원/kWh),실시간 확정 가격(원/kWh)\n'.strip().split(',')
+  content = 'ts,실시간 임시 가격(원/kWh),실시간 확정 가격(원/kWh)\n'
+
+  api = get_apis(API_KEY, API_URL)
+
+  while target <= end:
+    target_date = target.strftime('%Y-%m-%d')
+    api.smp_rt_rc(target_date)
+    target += timedelta(days=1)
+  
+    col_name_kor_en = {
+      'ts': 'ts',
+      '실시간 임시 가격(원/kWh)': 'smp_rt',
+      '실시간 확정 가격(원/kWh)': 'smp_rc',
+    }
+
+    with open(f'./json_temp_files/smp_rt_rc/{target_date}.json', 'r', encoding='UTF8') as json_file:
+      json_data = json.load(json_file)
+            
+      # column 순서대로 row를 만들어나간다. 마지막 value는 ','를 제거하고 \n을 붙인다.
+      for row in json_data:
+        new_row = ''
+        for col_key in title_row:
+          new_row += str(row[col_name_kor_en[col_key]]) + ','
+        new_row = new_row[:-1] + '\n'
+        content += new_row
+
+  with open(f'./data_files/제주전력시장_시장전기가격_실시간가격.csv', 'w', encoding='UTF8') as csv:
+    csv.write(content)
+
+
 
 def get_data_by_date(date):
   api = get_apis(API_KEY, API_URL)
@@ -217,20 +265,74 @@ def make_json_to_csv(start_date, end_date):
             target_csv.write(content)
     target += timedelta(days=1)
 
+def weather_data_merger():
+  location1 = [
+    'Bonggae-dong',
+    'Cheonji-dong', 
+    'Geumak-ri', 
+    'Gwangryeong-ri', 
+    'Hacheon-ri',
+    'Ilgwa-ri',
+    'Sangmo-ri',
+    'Songdang-ri',
+    'Yongsu-ri',
+  ]
+  location2 = [
+    'Cheju-do',
+    'Gaigeturi',
+    'Jeju',
+  ]
+
+  for weather_name in ['actual_weather', 'weather_forecast']:
+    with open(f'./data_files/{weather_name}_1.csv', 'w', encoding='UTF8') as f_to:
+      content = ''
+      for location in location1:
+        with open(f'./data_files/{weather_name}_1_{location}.csv', 'r', encoding='UTF8') as f_from:
+          data = f_from.readlines()
+
+          print(data)
+          
+          if len(content) == 0:
+            content += data[0]
+
+          for idx, row in enumerate(data):
+            if idx > 0:
+              content += row
+      f_to.write(content)
+    
+    with open(f'./data_files/{weather_name}_2.csv', 'w', encoding='UTF8') as f_to:
+      content = ''
+      for location in location2:
+        with open(f'./data_files/{weather_name}_2_{location}.csv', 'r', encoding='UTF8') as f_from:
+          data = f_from.readlines()
+          
+          if len(content) == 0:
+            content += data[0]
+
+          for idx, row in enumerate(data):
+            if idx > 0:
+              content += row
+      f_to.write(content)
+
 def data_getter(start, end):
   initialize()
   get_data_by_start_end_date(start, end)
   split_weather_data_by_location()
   make_copy_data_without_weather()
   make_json_to_csv(start, end)
+  weather_data_merger()
+
   print("완료되었습니다.")
 
 if __name__ == "__main__":
   start = '2024-10-23'
-  end = '2024-10-29'
+  end = '2024-10-30'
 
-  initialize()
-  get_data_by_start_end_date(start, end)
-  split_weather_data_by_location()
-  make_copy_data_without_weather()
-  make_json_to_csv(start, end)
+  # initialize()
+  # get_data_by_start_end_date(start, end)
+  # split_weather_data_by_location()
+  # make_copy_data_without_weather()
+  # make_json_to_csv(start, end)
+  weather_data_merger()
+
+  print("완료되었습니다.")

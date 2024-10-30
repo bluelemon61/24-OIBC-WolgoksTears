@@ -7,12 +7,14 @@ class get_apis:
     self.API_URL = API_URL
 
   def actual_weather(self, date):
+    file_path = f'./json_temp_files/actual_weather/{date}.json'
+    # with open(file_path, 'r') as f:
+
+
     actual_weather = requests.get(f'{self.API_URL}/data/cmpt-2024/actual-weather/{date}',
                     headers={
                         'Authorization': f'Bearer {self.API_KEY}'
                     }).json()
-
-    file_path = f'./json_temp_files/actual_weather/{date}.json'
 
     with open(file_path, 'w') as f:
       json.dump(actual_weather, f)

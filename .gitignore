@@ -8,3 +8,7 @@ json_temp_files/*
 
 # python virtual environment
 .venv
+
+# pycache
+*.pyc
+__pycache__/

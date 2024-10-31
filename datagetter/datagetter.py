@@ -170,7 +170,7 @@ def make_json_to_csv(start_date, end_date):
       'smp_rt_rc': '제주전력시장_시장전기가격_실시간가격',
     }
 
-    col_name_kor_en = {
+    col_name_kor_en = { # 한글 칼럼 영어로 바꾸기
       'ts': 'ts',
       '공급능력(kW)': 'supply_power',
       '현재 수요(kW)': 'present_load',
@@ -185,9 +185,9 @@ def make_json_to_csv(start_date, end_date):
       '실시간 확정 가격(원/kWh)': 'smp_rc',
     }
 
-    for en_title in title_name_en_kor.keys():
+    for en_title in title_name_en_kor.keys():  # elec_supply, smp_da, smp_rt_rc의 전력 데이터를 반복적으로 처리
       with open(f'./json_temp_files/{en_title}/{target_date}.json', 'r', encoding='UTF8') as json_file:
-        json_data = json.load(json_file)
+        json_data = json.load(json_file) # JSON 파일 내용을 파이썬 딕셔너리 또는 리스트로 변환하여 json_data에 저장
 
         title_row = []
         content = ''
@@ -206,7 +206,7 @@ def make_json_to_csv(start_date, end_date):
           new_row = new_row[:-1] + '\n'
           content += new_row
 
-        with open(f'./data_files/{en_title}.csv', 'a', encoding='UTF8') as target_csv:
+        with open(f'./data_files/{en_title}.csv', 'a', encoding='UTF8') as target_csv: #변환된 데이터를 csv에 추가
           target_csv.write(content)
 
 
@@ -284,17 +284,17 @@ def weather_data_merger():
   ]
 
   for weather_name in ['actual_weather', 'weather_forecast']:
-    with open(f'./data_files/{weather_name}_1.csv', 'w', encoding='UTF8') as f_to:
+    with open(f'./data_files/{weather_name}_1.csv', 'w', encoding='UTF8') as f_to: # location1 그룹의 병합된 데이터를 저장할 새 파일을 생성하고 쓰기('w') 모드로 염.
       content = ''
-      for location in location1:
+      for location in location1: #location1 리스트의 각 지역에 대해 반복하며, 해당 지역의 데이터를 파일에 누적
         with open(f'./data_files/{weather_name}_1_{location}.csv', 'r', encoding='UTF8') as f_from:
           data = f_from.readlines()
           
           if len(content) == 0:
-            content += data[0]
+            content += data[0] # data의 첫 번째 행(열 이름)을 content에 저장
 
           for idx, row in enumerate(data):
-            if idx > 0:
+            if idx > 0: #첫 번째 행(열 이름)을 제외한 나머지 데이터를 content에 추가
               content += row
       f_to.write(content)
     
@@ -322,7 +322,7 @@ def data_getter(start, end):
 
   print("완료되었습니다.")
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # 이 조건문은 이 파일이 "직접 실행되는 경우에만" 해당 블록의 코드를 실행
   start = '2024-10-23'
   end = '2024-10-30'
 

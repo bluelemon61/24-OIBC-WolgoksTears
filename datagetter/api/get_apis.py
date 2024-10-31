@@ -1,5 +1,5 @@
 import json 
-import requests
+import requests # requests 관련 함수는 API 사이트 참고
 
 class get_apis:
   def __init__(self, API_KEY, API_URL):
@@ -7,7 +7,7 @@ class get_apis:
     self.API_URL = API_URL
 
   def actual_weather(self, date):
-    file_path = f'./json_temp_files/actual_weather/{date}.json'
+    file_path = f'./json_temp_files/actual_weather/{date}.json'  # 데이터를 저장할 파일 경로 정의
     # with open(file_path, 'r') as f:
 
 
@@ -16,8 +16,8 @@ class get_apis:
                         'Authorization': f'Bearer {self.API_KEY}'
                     }).json()
 
-    with open(file_path, 'w') as f:
-      json.dump(actual_weather, f)
+    with open(file_path, 'w') as f:  # file_path에 정의된 경로에 JSON 파일을 쓰기 모드('w')로 열고 데이터를 저장
+      json.dump(actual_weather, f) # 데이터를 JSON 파일로 저장
   
   def weather_forecast(self, date):
     weather_forecast = requests.get(f'{self.API_URL}/data/cmpt-2024/weather-forecast/{date}',

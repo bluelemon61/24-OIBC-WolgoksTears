@@ -1,23 +1,23 @@
-import os
-from dotenv import load_dotenv
+import os   # 특정 폴더를 만들거나 파일을 삭제할 때 사용
+from dotenv import load_dotenv # .env 파일에서 정보를 가져오는 기능
 import json
 from datetime import datetime, timedelta
 
-if __name__ == "__main__":
+if __name__ == "__main__":            # 프로그램이 "직접 실행될 때만" 특정 코드를 실행
     # For running as main script
     from api.get_apis import get_apis
 else:
     # For using as a package
     from .api.get_apis import get_apis
 
-load_dotenv()
+load_dotenv()   #.env 파일에 저장된 내용을 불러오기 
 
-API_KEY = os.getenv("API_KEY")
-API_URL = os.getenv("API_URL")
+API_KEY = os.getenv("API_KEY")          #.env 파일에서 API_KEY라는 이름의 정보를 가져와서 API_KEY라는 변수에 저장
+API_URL = os.getenv("API_URL")          #.env 파일에서 API_URL이라는 이름의 정보를 가져와서 API_URL이라는 변수에 저장
 
-def initialize():
-  json_folder_path = './json_temp_files'
-  category_folder_paths = [
+def initialize():               # 이후에 사용할 여러 폴더를 미리 만드는 역할
+  json_folder_path = './json_temp_files'  # JSON 데이터를 임시로 저장할 json_temp_files라는 폴더 경로
+  category_folder_paths = [  #  JSON 데이터를 카테고리별로 나누어 저장할 폴더 이름을 모아둔 리스트
     'actual_weather', 
     'weather_forecast', 
     'smp_da', 
@@ -25,12 +25,12 @@ def initialize():
     'elec_supply'
   ]
 
-  if not os.path.exists(json_folder_path):
-    os.makedirs(json_folder_path)
+  if not os.path.exists(json_folder_path): # json_temp_files 폴더가 존재하지 않을 경우
+    os.makedirs(json_folder_path) # json_temp_files 폴더를 생성, (os.makedirs는 폴더가 여러 계층으로 있을 때 사용)
 
-  for folder_name in category_folder_paths:
-    if not os.path.exists(f'{json_folder_path}/{folder_name}'):
-      os.makedirs(f'{json_folder_path}/{folder_name}')
+  for folder_name in category_folder_paths: # category_folder_paths 안에 있는 모든 폴더 이름 반복
+    if not os.path.exists(f'{json_folder_path}/{folder_name}'): 
+      os.makedirs(f'{json_folder_path}/{folder_name}') # 없다면 해당 폴더 이름 생성
 
 def get_smp_rt_rc_right_data():
   """
@@ -75,8 +75,8 @@ def get_smp_rt_rc_right_data():
 
 
 
-def get_data_by_date(date):
-  api = get_apis(API_KEY, API_URL)
+def get_data_by_date(date): # 특정 date 날짜에 해당하는 모든 데이터를 가져오는 역할
+  api = get_apis(API_KEY, API_URL)  # API 서버와 연결하여 데이터를 요청할 수 있음.
 
   api.actual_weather(date)
   api.weather_forecast(date)
@@ -96,9 +96,9 @@ def get_data_by_start_end_date(start_date, end_date):
   end = datetime.strptime(end_date, '%Y-%m-%d')
 
   while target <= end:
-    target_date = target.strftime('%Y-%m-%d')
+    target_date = target.strftime('%Y-%m-%d') # target 날짜를 문자열 형식으로 변환하여 target_date 변수에 저장
     get_data_by_date(target_date)
-    target += timedelta(days=1)
+    target += timedelta(days=1)  # timedelta로 datetime 객체의 더하기, 빼기를 수행 가능
 
 def split_weather_data_by_location():
   """
@@ -109,26 +109,26 @@ def split_weather_data_by_location():
     '기상예측데이터': 'weather_forecast',
   }
 
-  for kor_csv_name in csv_name.keys():
-    for num in range(1,3):
-      with open(f'./data_files/{kor_csv_name}_{num}.csv', 'r+', encoding='UTF8') as actual_weather:
-        data = actual_weather.readlines()
-        title_row = data[0]
+  for kor_csv_name in csv_name.keys():  # sv_name 딕셔너리의 각 키 값을 하나씩 가져옴. 
+    for num in range(1,3):  #두 종류의 데이터 파일로 나누어져 있으므로 2번 반복
+      with open(f'./data_files/{kor_csv_name}_{num}.csv', 'r+', encoding='UTF8') as actual_weather:  # 각 파일을 읽기 및 쓰기(r+) 모드로 염.
+        data = actual_weather.readlines() # 파일을 한 줄씩 읽어와 data라는 리스트에 저장
+        title_row = data[0] # data의 첫 번째 줄을 title_row에 저장(각 열의 이름)
 
         content = ''
         file_name = ''
 
-        for i, row in enumerate(data):
-          if row == title_row:
-            if len(content):
+        for i, row in enumerate(data): # data 리스트에서 각 행(row)과 행의 인덱스(i)를 반복
+          if row == title_row: # 중간에 title_row랑 같은 내용이 존재해서 그럼.
+            if len(content): # 이전 지역에 데이터를 저장하고 content 초기화
               with open(f'./data_files/{csv_name[kor_csv_name]}_{num}_{file_name}.csv', 'w', encoding='UTF8') as f:
                 f.write(content)
               content = ''
-            file_name = data[i+1].split(',')[0]
+            file_name = data[i+1].split(',')[0] #데이터를 ,로 나누고 첫 번째 값은 file_name
           content += row
 
         with open(f'./data_files/{csv_name[kor_csv_name]}_{num}_{file_name}.csv', 'w', encoding='UTF8') as f:
-          f.write(content)
+          f.write(content) # 위의 반복문에서는 마지막 지역의 데이터를 저장할 기회가 없으므로 이 부분에서 마지막으로 데이터를 저장
 
 def make_copy_data_without_weather():
   title_name_en_kor = {
@@ -142,7 +142,7 @@ def make_copy_data_without_weather():
     with open(f'./data_files/{title_name_en_kor[en_title]}.csv', 'r', encoding='UTF8') as csv:
       data = csv.readlines()
       
-      # 원본 데이터를 보존하기 위해 새로운 파일에 덮어쓸거임
+      # 원본 데이터를 보존하기 위해 새로운 파일(복사본)에 덮어쓸거임 
       for row in data:
         content += row
     
@@ -158,7 +158,7 @@ def make_json_to_csv(start_date, end_date):
     end_date (str): 끝 날짜, YYYY-MM-DD
   """
 
-  target = datetime.strptime(start_date, '%Y-%m-%d')
+  target = datetime.strptime(start_date, '%Y-%m-%d')  # strptime은 문자열을 날짜,시간으로 변환
   end = datetime.strptime(end_date, '%Y-%m-%d')
 
   while target <= end:

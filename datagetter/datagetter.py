@@ -333,4 +333,4 @@ if __name__ == "__main__":
   # make_json_to_csv(start, end)
   weather_data_merger()
 
-  print("완료되었습니다.")
+  print("repository/data_files에 파일이 저장되었습니다.")

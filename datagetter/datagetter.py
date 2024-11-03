@@ -320,7 +320,7 @@ def data_getter(start, end):
   make_json_to_csv(start, end)
   weather_data_merger()
 
-  print("완료되었습니다.")
+  print("repository/data_files에 파일이 저장되었습니다.")
 
 if __name__ == "__main__":
   start = '2024-10-23'

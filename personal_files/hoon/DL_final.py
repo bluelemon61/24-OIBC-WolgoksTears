@@ -18,6 +18,8 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(256, 256, dtype=torch.float64),
             nn.ReLU(),
+            nn.Linear(256, 256, dtype=torch.float64),
+            nn.ReLU(),
             nn.Linear(256, 128, dtype=torch.float64),
             nn.ReLU(),
             nn.Linear(128, 32, dtype=torch.float64),
@@ -30,7 +32,7 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         out = self.linear_relu_stack(x)
 
-        return out 
+        return out
     
 
 class ElecDataset(Dataset):
@@ -39,7 +41,7 @@ class ElecDataset(Dataset):
 
     columns_to_scale = x_data.columns[1:]
     x_data[columns_to_scale] = scaler.fit_transform(x_data[columns_to_scale])
-    
+
     self.x_data = x_data.fillna(0)
     self.y_data = y_data.fillna(0)
 
@@ -51,21 +53,21 @@ class ElecDataset(Dataset):
 
   def __len__(self):
     return int(len(self.y_data))
-  
+
 def train(model, train_loader, criterion, optimizer, num_epochs, device):
     model = model.to(device)  # Move model to GPU/CPU
 
     train_history = []
-    
+
     for epoch in range(num_epochs):
         model.train()  # Set the model to training mode
-        
+
         running_loss = 0.0  # To keep track of loss
         for inputs, targets in tqdm(train_loader, ncols=100):
 
             # Move data to the same device as the model
             inputs, targets = inputs.to(device), targets.to(device)
-            
+
             # Forward pass
             outputs = model(inputs)
 
@@ -78,7 +80,7 @@ def train(model, train_loader, criterion, optimizer, num_epochs, device):
             optimizer.step()        # Update model parameters
 
             running_loss += loss.item()
-            
+
             # print(loss.item())
 
         # Print the loss after each epoch

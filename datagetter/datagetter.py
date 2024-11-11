@@ -320,7 +320,7 @@ def data_getter(start, end):
   make_json_to_csv(start, end)
   weather_data_merger()
 
-  print("완료되었습니다.")
+  print("repository/data_files에 파일이 저장되었습니다.")
 
 if __name__ == "__main__":  # 이 조건문은 이 파일이 "직접 실행되는 경우에만" 해당 블록의 코드를 실행
   start = '2024-10-23'
@@ -333,4 +333,4 @@ if __name__ == "__main__":  # 이 조건문은 이 파일이 "직접 실행되�
   # make_json_to_csv(start, end)
   weather_data_merger()
 
-  print("완료되었습니다.")
+  print("repository/data_files에 파일이 저장되었습니다.")

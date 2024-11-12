@@ -4,13 +4,13 @@ from torch.utils.data import Dataset
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 
-class NeuralNetwork(nn.Module):
+class NeuralNetwork(nn.Module): # PyTorch의 nn.Module을 상속. nn.Module은 PyTorch에서 신경망의 기본 구조를 제공하는 클래스
     def __init__(self, input_size, output_size):
-        super(NeuralNetwork, self).__init__()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(input_size, 128, dtype=torch.float64),
-            nn.ReLU(),
-            nn.Linear(128, 256, dtype=torch.float64),
+        super(NeuralNetwork, self).__init__() # 신경망의 기본 구조를 초기화
+        self.linear_relu_stack = nn.Sequential( # nn.Sequential은 여러 층을 순서대로 연결. self.linear_relu_stack은 이 모델의 은닉층들을 한 줄로 쌓아 올린 형태로 정의
+            nn.Linear(input_size, 128, dtype=torch.float64), # 입력층: input_size개의 입력 값을 받아 128개의 출력으로 변환.
+            nn.ReLU(),                                       # 활성화 함수: ReLU는 양수 값은 그대로 유지하고 음수 값은 0으로 만드는 비선형 함수 -> 비선형 관계를 학습
+            nn.Linear(128, 256, dtype=torch.float64),        # 은닉층들...
             nn.ReLU(),
             nn.Linear(256, 256, dtype=torch.float64),
             nn.ReLU(),
@@ -26,11 +26,11 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(32, 8, dtype=torch.float64),
             nn.ReLU(),
-            nn.Linear(8, output_size, dtype=torch.float64)
+            nn.Linear(8, output_size, dtype=torch.float64) # 출력층: 8개의 입력을 받아 output_size(1)만큼의 값을 생성
         )
 
-    def forward(self, x):
-        out = self.linear_relu_stack(x)
+    def forward(self, x): # forward 메서드는 입력 데이터를 받아 신경망을 통과시키고, 최종 출력을 반환하는 함수
+        out = self.linear_relu_stack(x) # x가 신경망의 모든 층을 거치고, out에 최종 예측 값이 저장
 
         return out
     
